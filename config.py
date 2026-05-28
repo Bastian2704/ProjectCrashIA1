@@ -7,9 +7,10 @@ BASE_DIR = Path(__file__).parent
 class Config:
     UPLOAD_FOLDER: str = str(BASE_DIR / "uploads")
     RESULTS_FOLDER: str = str(BASE_DIR / "results")
-    MODEL_PATH: str = str(BASE_DIR / "models" / "best.pt")
+    MODEL_PATH: str = str(BASE_DIR / "models" / "best_n.pt")
 
-    CONFIDENCE_THRESHOLD: float = 0.50
+    # Optimal threshold from Experiment 1 (maximizes Recall for safety-critical use)
+    CONFIDENCE_THRESHOLD: float = 0.30
     SAMPLE_RATE: int = 6
     MAX_VIDEO_DURATION: int = 600
     ALLOWED_EXTENSIONS: set = {"mp4", "avi", "mov", "mkv"}
