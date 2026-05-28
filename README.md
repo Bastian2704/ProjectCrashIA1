@@ -1,6 +1,6 @@
 # CrashVision
 
-Automatic traffic accident detection from surveillance video using computer vision. Upload a video, and CrashVision runs a fine-tuned YOLOv8 model frame by frame, highlights detected accidents with bounding boxes, and returns a timestamped gallery of events.
+Automatic traffic accident detection from surveillance video. Upload a video, and CrashVision runs a fine-tuned YOLOv8 model frame by frame, highlights detected accidents with bounding boxes, and returns a timestamped gallery of events.
 
 ---
 
