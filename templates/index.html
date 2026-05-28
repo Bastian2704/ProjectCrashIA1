@@ -10,6 +10,7 @@
     <div class="card bg-secondary bg-opacity-10 border-secondary">
       <div class="card-body p-4">
         <form id="upload-form" enctype="multipart/form-data">
+
           <div class="mb-3">
             <label for="video-input" class="form-label">Archivo de video</label>
             <input
@@ -21,6 +22,42 @@
               required
             />
             <div class="form-text text-secondary">Formatos: MP4, AVI, MOV, MKV — máx. 500 MB</div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Modo de análisis</label>
+            <div class="d-flex flex-column gap-2">
+
+              <div class="form-check p-3 rounded border border-secondary bg-dark bg-opacity-25">
+                <input class="form-check-input" type="radio" name="mode-selector" id="mode-n" value="n" checked>
+                <label class="form-check-label w-100" for="mode-n">
+                  <span class="fw-semibold">YOLOv8n</span>
+                  <span class="badge bg-success ms-2">Rápido</span>
+                  <div class="text-secondary small mt-1">Nano — 6.2 MB · mAP@50: 0.847 · Recomendado para CPU</div>
+                </label>
+              </div>
+
+              <div class="form-check p-3 rounded border border-secondary bg-dark bg-opacity-25">
+                <input class="form-check-input" type="radio" name="mode-selector" id="mode-s" value="s">
+                <label class="form-check-label w-100" for="mode-s">
+                  <span class="fw-semibold">YOLOv8s</span>
+                  <span class="badge bg-warning text-dark ms-2">Preciso</span>
+                  <div class="text-secondary small mt-1">Small — 22.5 MB · mAP@50: 0.891 · Mayor exactitud</div>
+                </label>
+              </div>
+
+              <div class="form-check p-3 rounded border border-danger bg-dark bg-opacity-25">
+                <input class="form-check-input" type="radio" name="mode-selector" id="mode-compare" value="compare">
+                <label class="form-check-label w-100" for="mode-compare">
+                  <span class="fw-semibold text-danger">Comparar ambos modelos</span>
+                  <span class="badge bg-danger ms-2">Experimento</span>
+                  <div class="text-secondary small mt-1">Corre YOLOv8n y YOLOv8s sobre el mismo video · Muestra F1, Recall, Precision y métricas de velocidad lado a lado</div>
+                </label>
+              </div>
+
+            </div>
+            <input type="hidden" id="mode-hidden" name="mode" value="single">
+            <input type="hidden" id="model-hidden" name="model" value="n">
           </div>
 
           <button type="submit" id="submit-btn" class="btn btn-danger w-100">

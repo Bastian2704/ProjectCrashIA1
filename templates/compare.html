@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% block title %}CrashVision — Comparación de Modelos{% endblock %}
+
+{% block content %}
+
+{# ── Header ── #}
+<div class="mb-4 d-flex justify-content-between align-items-start flex-wrap gap-2">
+  <div>
+    <h1 class="fw-bold mb-1">Comparación de Modelos</h1>
+    <p class="text-secondary small mb-0">Archivo: <strong>{{ report.video_filename }}</strong></p>
+    <p class="text-secondary small">Job: <code>{{ report.job_id }}</code></p>
+  </div>
+  <a href="/" class="btn btn-outline-secondary btn-sm align-self-start">&#8592; Nuevo análisis</a>
+</div>
+
+{# ── Detection summary badges ── #}
+{% set dn = report.models.n %}
+{% set ds = report.models.s %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card bg-secondary bg-opacity-10 border-secondary text-center p-3">
+      <div class="fs-2 fw-bold text-danger">{{ dn.total_detections }}</div>
+      <div class="text-secondary small">Detecciones YOLOv8n</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-secondary bg-opacity-10 border-secondary text-center p-3">
+      <div class="fs-2 fw-bold text-warning">{{ ds.total_detections }}</div>
+      <div class="text-secondary small">Detecciones YOLOv8s</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-secondary bg-opacity-10 border-secondary text-center p-3">
+      <div class="fs-2 fw-bold text-success">{{ dn.runtime_stats.fps_inference }}</div>
+      <div class="text-secondary small">FPS YOLOv8n</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-secondary bg-opacity-10 border-secondary text-center p-3">
+      <div class="fs-2 fw-bold text-info">{{ ds.runtime_stats.fps_inference }}</div>
+      <div class="text-secondary small">FPS YOLOv8s</div>
+    </div>
+  </div>
+</div>
+
+{# ── Metrics table ── #}
+<div class="card bg-secondary bg-opacity-10 border-secondary mb-4">
+  <div class="card-header border-secondary">
+    <h5 class="mb-0 fw-semibold">Métricas Comparativas</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-dark table-hover mb-0 align-middle">
+        <thead>
+          <tr class="border-secondary">
+            <th class="ps-4 text-secondary fw-normal">Métrica</th>
+            <th class="text-center">
+              <span class="badge bg-success px-3 py-2">YOLOv8n</span>
+            </th>
+            <th class="text-center">
+              <span class="badge bg-warning text-dark px-3 py-2">YOLOv8s</span>
+            </th>
+            <th class="text-center text-secondary fw-normal small">Mejor</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          {# — Entrenamiento — #}
+          <tr class="table-secondary text-secondary">
+            <td colspan="4" class="ps-4 small fw-semibold py-2">MÉTRICAS DE ENTRENAMIENTO (val set, Colab)</td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">Precision</td>
+            <td class="text-center fw-semibold">{{ "%.3f"|format(dn.training_metrics.precision) }}</td>
+            <td class="text-center fw-semibold">{{ "%.3f"|format(ds.training_metrics.precision) }}</td>
+            <td class="text-center">
+              {% if ds.training_metrics.precision > dn.training_metrics.precision %}
+                <span class="badge bg-warning text-dark">YOLOv8s</span>
+              {% else %}
+                <span class="badge bg-success">YOLOv8n</span>
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">Recall</td>
+            <td class="text-center fw-semibold">{{ "%.3f"|format(dn.training_metrics.recall) }}</td>
+            <td class="text-center fw-semibold">{{ "%.3f"|format(ds.training_metrics.recall) }}</td>
+            <td class="text-center">
+              {% if ds.training_metrics.recall > dn.training_metrics.recall %}
+                <span class="badge bg-warning text-dark">YOLOv8s</span>
+              {% else %}
+                <span class="badge bg-success">YOLOv8n</span>
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">F1-Score</td>
+            <td class="text-center fw-semibold">{{ "%.3f"|format(dn.training_metrics.f1) }}</td>
+            <td class="text-center fw-semibold">{{ "%.3f"|format(ds.training_metrics.f1) }}</td>
+            <td class="text-center">
+              {% if ds.training_metrics.f1 > dn.training_metrics.f1 %}
+                <span class="badge bg-warning text-dark">YOLOv8s</span>
+              {% else %}
+                <span class="badge bg-success">YOLOv8n</span>
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">mAP@50</td>
+            <td class="text-center fw-semibold">{{ "%.3f"|format(dn.training_metrics.map50) }}</td>
+            <td class="text-center fw-semibold">{{ "%.3f"|format(ds.training_metrics.map50) }}</td>
+            <td class="text-center">
+              {% if ds.training_metrics.map50 > dn.training_metrics.map50 %}
+                <span class="badge bg-warning text-dark">YOLOv8s</span>
+              {% else %}
+                <span class="badge bg-success">YOLOv8n</span>
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">mAP@50-95</td>
+            <td class="text-center fw-semibold">{{ "%.3f"|format(dn.training_metrics.map50_95) }}</td>
+            <td class="text-center fw-semibold">{{ "%.3f"|format(ds.training_metrics.map50_95) }}</td>
+            <td class="text-center">
+              {% if ds.training_metrics.map50_95 > dn.training_metrics.map50_95 %}
+                <span class="badge bg-warning text-dark">YOLOv8s</span>
+              {% else %}
+                <span class="badge bg-success">YOLOv8n</span>
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">Tamaño del modelo</td>
+            <td class="text-center">{{ dn.training_metrics.model_size_mb }} MB</td>
+            <td class="text-center">{{ ds.training_metrics.model_size_mb }} MB</td>
+            <td class="text-center">
+              {% if dn.training_metrics.model_size_mb <= ds.training_metrics.model_size_mb %}
+                <span class="badge bg-success">YOLOv8n</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">YOLOv8s</span>
+              {% endif %}
+            </td>
+          </tr>
+
+          {# — Runtime sobre este video — #}
+          <tr class="table-secondary text-secondary">
+            <td colspan="4" class="ps-4 small fw-semibold py-2">ESTADÍSTICAS EN ESTE VIDEO</td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">Detecciones totales</td>
+            <td class="text-center fw-semibold text-danger">{{ dn.total_detections }}</td>
+            <td class="text-center fw-semibold text-warning">{{ ds.total_detections }}</td>
+            <td class="text-center text-secondary small">—</td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">FPS de inferencia</td>
+            <td class="text-center fw-semibold">{{ dn.runtime_stats.fps_inference }}</td>
+            <td class="text-center fw-semibold">{{ ds.runtime_stats.fps_inference }}</td>
+            <td class="text-center">
+              {% if dn.runtime_stats.fps_inference >= ds.runtime_stats.fps_inference %}
+                <span class="badge bg-success">YOLOv8n</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">YOLOv8s</span>
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">ms por frame</td>
+            <td class="text-center">{{ dn.runtime_stats.ms_per_frame }} ms</td>
+            <td class="text-center">{{ ds.runtime_stats.ms_per_frame }} ms</td>
+            <td class="text-center">
+              {% if dn.runtime_stats.ms_per_frame <= ds.runtime_stats.ms_per_frame %}
+                <span class="badge bg-success">YOLOv8n</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">YOLOv8s</span>
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">Tiempo total procesamiento</td>
+            <td class="text-center">{{ dn.runtime_stats.total_time_s }} s</td>
+            <td class="text-center">{{ ds.runtime_stats.total_time_s }} s</td>
+            <td class="text-center text-secondary small">—</td>
+          </tr>
+
+          <tr>
+            <td class="ps-4">Frames analizados</td>
+            <td class="text-center">{{ dn.runtime_stats.frames_processed }}</td>
+            <td class="text-center">{{ ds.runtime_stats.frames_processed }}</td>
+            <td class="text-center text-secondary small">—</td>
+          </tr>
+
+          {% if dn.runtime_stats.confidence_avg is not none %}
+          <tr>
+            <td class="ps-4">Confianza promedio</td>
+            <td class="text-center">{{ dn.runtime_stats.confidence_avg if dn.runtime_stats.confidence_avg else '—' }}</td>
+            <td class="text-center">{{ ds.runtime_stats.confidence_avg if ds.runtime_stats.confidence_avg else '—' }}</td>
+            <td class="text-center text-secondary small">—</td>
+          </tr>
+          <tr>
+            <td class="ps-4">Confianza mín / máx</td>
+            <td class="text-center small">{{ dn.runtime_stats.confidence_min if dn.runtime_stats.confidence_min else '—' }} / {{ dn.runtime_stats.confidence_max if dn.runtime_stats.confidence_max else '—' }}</td>
+            <td class="text-center small">{{ ds.runtime_stats.confidence_min if ds.runtime_stats.confidence_min else '—' }} / {{ ds.runtime_stats.confidence_max if ds.runtime_stats.confidence_max else '—' }}</td>
+            <td class="text-center text-secondary small">—</td>
+          </tr>
+          {% endif %}
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{# ── Conclusion badges ── #}
+<div class="d-flex flex-wrap gap-2 mb-5">
+  <span class="badge bg-secondary p-2 fs-6">
+    Más rápido:
+    {% if dn.runtime_stats.fps_inference >= ds.runtime_stats.fps_inference %}
+      <strong class="text-success">YOLOv8n</strong>
+    {% else %}
+      <strong class="text-warning">YOLOv8s</strong>
+    {% endif %}
+  </span>
+  <span class="badge bg-secondary p-2 fs-6">
+    Más preciso (mAP@50):
+    {% if ds.training_metrics.map50 > dn.training_metrics.map50 %}
+      <strong class="text-warning">YOLOv8s</strong>
+    {% else %}
+      <strong class="text-success">YOLOv8n</strong>
+    {% endif %}
+  </span>
+  <span class="badge bg-secondary p-2 fs-6">
+    Más liviano:
+    {% if dn.training_metrics.model_size_mb <= ds.training_metrics.model_size_mb %}
+      <strong class="text-success">YOLOv8n</strong>
+    {% else %}
+      <strong class="text-warning">YOLOv8s</strong>
+    {% endif %}
+  </span>
+  <span class="badge bg-secondary p-2 fs-6">
+    Mayor F1:
+    {% if ds.training_metrics.f1 > dn.training_metrics.f1 %}
+      <strong class="text-warning">YOLOv8s</strong>
+    {% else %}
+      <strong class="text-success">YOLOv8n</strong>
+    {% endif %}
+  </span>
+</div>
+
+{# ── Detection frames side by side ── #}
+<div class="row g-4">
+
+  {# YOLOv8n column #}
+  <div class="col-12 col-xl-6">
+    <h4 class="fw-semibold mb-3">
+      <span class="badge bg-success me-2">YOLOv8n</span>
+      {{ dn.total_detections }} detección(es)
+    </h4>
+
+    {% if dn.total_detections == 0 %}
+      <div class="alert alert-success">Sin detecciones con YOLOv8n.</div>
+    {% else %}
+      <div class="row g-3">
+        {% for det in dn.detections %}
+        <div class="col-12 col-sm-6">
+          <div class="card bg-secondary bg-opacity-10 border-secondary h-100">
+            <img
+              src="{{ url_for('serve_frame', filename=det.image_path) }}"
+              class="card-img-top"
+              alt="Frame {{ det.frame_id }}"
+              loading="lazy"
+              style="object-fit: cover; max-height: 200px;"
+            />
+            <div class="card-body p-2">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="badge bg-danger small">{{ det.confidence_pct }}</span>
+                <span class="text-secondary" style="font-size: 0.75rem;">{{ det.timestamp_str }}</span>
+              </div>
+              <p class="mb-0 text-secondary" style="font-size: 0.75rem;">Frame #{{ det.frame_id }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  {# YOLOv8s column #}
+  <div class="col-12 col-xl-6">
+    <h4 class="fw-semibold mb-3">
+      <span class="badge bg-warning text-dark me-2">YOLOv8s</span>
+      {{ ds.total_detections }} detección(es)
+    </h4>
+
+    {% if ds.total_detections == 0 %}
+      <div class="alert alert-success">Sin detecciones con YOLOv8s.</div>
+    {% else %}
+      <div class="row g-3">
+        {% for det in ds.detections %}
+        <div class="col-12 col-sm-6">
+          <div class="card bg-secondary bg-opacity-10 border-secondary h-100">
+            <img
+              src="{{ url_for('serve_frame', filename=det.image_path) }}"
+              class="card-img-top"
+              alt="Frame {{ det.frame_id }}"
+              loading="lazy"
+              style="object-fit: cover; max-height: 200px;"
+            />
+            <div class="card-body p-2">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="badge bg-warning text-dark small">{{ det.confidence_pct }}</span>
+                <span class="text-secondary" style="font-size: 0.75rem;">{{ det.timestamp_str }}</span>
+              </div>
+              <p class="mb-0 text-secondary" style="font-size: 0.75rem;">Frame #{{ det.frame_id }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}
