@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}CrashVision — Resultados{% endblock %}
+
+{% block content %}
+<div class="mb-4 d-flex justify-content-between align-items-start flex-wrap gap-2">
+  <div>
+    <h1 class="fw-bold mb-1">Resultados del análisis</h1>
+    <p class="text-secondary small mb-0">Job: <code>{{ report.job_id }}</code></p>
+    <p class="text-secondary small">Archivo: <strong>{{ report.video_filename }}</strong></p>
+  </div>
+  <a href="/" class="btn btn-outline-secondary btn-sm">&#8592; Nuevo análisis</a>
+</div>
+
+{% if report.total_detections == 0 %}
+  <div class="alert alert-success">
+    No se detectaron accidentes en este video.
+  </div>
+{% else %}
+  <div class="alert alert-danger">
+    <strong>{{ report.total_detections }}</strong> evento(s) de accidente detectado(s).
+  </div>
+
+  <div class="row g-4">
+    {% for det in report.detections %}
+    <div class="col-md-6 col-xl-4">
+      <div class="card bg-secondary bg-opacity-10 border-secondary h-100">
+        <img
+          src="{{ url_for('serve_frame', filename=det.image_path) }}"
+          class="card-img-top"
+          alt="Frame {{ det.frame_id }}"
+          loading="lazy"
+          style="object-fit: cover; max-height: 220px;"
+        />
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="badge bg-danger">{{ det.confidence_pct }}</span>
+            <span class="text-secondary small">{{ det.timestamp_str }}</span>
+          </div>
+          <p class="small mb-1 text-secondary">Frame #{{ det.frame_id }}</p>
+          <p class="small mb-0 text-secondary">
+            BBox: {{ det.bbox | join(', ') }}
+          </p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

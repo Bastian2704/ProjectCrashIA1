@@ -1,0 +1,21 @@
+:root {
+  --cv-red: #dc3545;
+  --cv-dark: #0d0d0d;
+}
+
+body {
+  background-color: var(--cv-dark);
+}
+
+.card {
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0 0 1px var(--cv-red);
+}
+
+code {
+  color: #adb5bd;
+  font-size: 0.85em;
+}
