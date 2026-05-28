@@ -21,6 +21,7 @@ Path(Config.UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
 Path(Config.RESULTS_FOLDER).mkdir(parents=True, exist_ok=True)
 
 detector = AccidentDetector()
+detector.warmup()
 processor = VideoProcessor(detector)
 reporter = ReportGenerator()
 
